@@ -9,6 +9,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const Map<int, Color> color =
+    {
+      50: Color.fromRGBO(196, 15, 15, 0.1),
+      100:Color.fromRGBO(196, 15, 15, .2),
+      200:Color.fromRGBO(196, 15, 15, .3),
+      300:Color.fromRGBO(196, 15, 15, .4),
+      400:Color.fromRGBO(196, 15, 15, .5),
+      500:Color.fromRGBO(196, 15, 15, .6),
+      600:Color.fromRGBO(196, 15, 15, .7),
+      700:Color.fromRGBO(196, 15, 15, .8),
+      800:Color.fromRGBO(196, 15, 15, .9),
+      900:Color.fromRGBO(196, 15, 15, 1),
+    };
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -21,12 +34,14 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primaryColor: Color(0xFFC40F0F),
-        accentColor: Color(0xFFC40F0F),
+        primarySwatch: MaterialColor(0xFFC40F0F, color),
+        accentColor: Color(0xFFC40F0F).withOpacity(0.0784313725490196),
         backgroundColor: Colors.white,
         textTheme: TextTheme(
-          headline3: TextStyle(color: Color(0xff191919), fontSize: 24)
-        )
+          headline3: TextStyle(color: Color(0xff191919), fontSize: 24),
+          subtitle2: TextStyle(color: Color(0xff191919).withOpacity(0.6980392156862745), fontSize: 14),
+          bodyText2: TextStyle(color: Colors.black, fontSize: 14)
+        ),
       ),
       home: SingUpPage(),
     );
@@ -34,7 +49,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
