@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ubd/views/auth/quick_id.dart';
 import 'package:ubd/views/auth/sign_up.dart';
 
 void main() {
@@ -39,12 +40,13 @@ class MyApp extends StatelessWidget {
         backgroundColor: Colors.white,
         textTheme: TextTheme(
           headline3: TextStyle(color: Color(0xff191919), fontSize: 24),
+          headline4: TextStyle(color: Color(0xff191919), fontSize: 20, fontWeight: FontWeight.bold),
           subtitle1: TextStyle(color: Color(0xff191919), fontSize: 14),
           subtitle2: TextStyle(color: Color(0xaa191919), fontSize: 14),
           bodyText2: TextStyle(color: Colors.black, fontSize: 14)
         ),
       ),
-      home: SingUpPage(),
+      home: QuickIdView(), //SingUpPage(),
     );
   }
 }
