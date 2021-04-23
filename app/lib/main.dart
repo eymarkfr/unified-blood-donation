@@ -39,7 +39,8 @@ class MyApp extends StatelessWidget {
         backgroundColor: Colors.white,
         textTheme: TextTheme(
           headline3: TextStyle(color: Color(0xff191919), fontSize: 24),
-          subtitle2: TextStyle(color: Color(0xff191919).withOpacity(0.6980392156862745), fontSize: 14),
+          subtitle1: TextStyle(color: Color(0xff191919), fontSize: 14),
+          subtitle2: TextStyle(color: Color(0xaa191919), fontSize: 14),
           bodyText2: TextStyle(color: Colors.black, fontSize: 14)
         ),
       ),

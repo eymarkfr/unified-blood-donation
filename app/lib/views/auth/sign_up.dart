@@ -1,7 +1,16 @@
-import 'package:flutter/gestures.dart';
+import 'package:country_code_picker/country_code_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ubd/widgets/custom_text_from_field.dart';
+import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
+import 'package:ubd/constants.dart';
+import 'package:ubd/widgets/auth/sign_up_initial.dart';
+
+enum SIGN_UP_STATE {
+  FORM,
+  BIRTHDAY,
+  LOCATION,
+  BLOOD_GROUP
+}
 
 class SingUpPage extends StatefulWidget {
   @override
@@ -10,191 +19,226 @@ class SingUpPage extends StatefulWidget {
 
 class _SingUpPageState extends State<SingUpPage> {
 
-  final _formKey = GlobalKey<FormState>();
+  SIGN_UP_STATE _signUpState = SIGN_UP_STATE.FORM;
 
-  static InputDecoration _getInputDecoration(theme, IconData icon, String hintText) {
-    return InputDecoration(
-      prefixIcon: Icon(icon),
-      focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
-          borderRadius: BorderRadius.circular(1000)
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Color(0xff191919), width: 1.0),
-        borderRadius: BorderRadius.circular(1000)
-      ),
-      focusColor: theme.accentColor,
-      hintText: hintText
-    );
+  void _onNext() {
+    SIGN_UP_STATE nextState = SIGN_UP_STATE.FORM;
+    switch(_signUpState) {
+      case SIGN_UP_STATE.FORM:
+        nextState = SIGN_UP_STATE.BIRTHDAY;
+        break;
+      case SIGN_UP_STATE.BIRTHDAY:
+        nextState = SIGN_UP_STATE.LOCATION;
+        break;
+      case SIGN_UP_STATE.LOCATION:
+        nextState = SIGN_UP_STATE.BLOOD_GROUP;
+        break;
+      case SIGN_UP_STATE.BLOOD_GROUP:
+        // TODO: Handle this case.
+        break;
+    }
+
+    setState(() {
+      _signUpState = nextState;
+    });
+  }
+
+  double _getProgress(SIGN_UP_STATE signUpState) {
+    switch(signUpState) {
+      case SIGN_UP_STATE.FORM: return 0.0;
+      case SIGN_UP_STATE.BIRTHDAY: return 0.25;
+      case SIGN_UP_STATE.LOCATION: return 0.5;
+      case SIGN_UP_STATE.BLOOD_GROUP: return 0.75;
+    }
+  }
+  
+  Widget _getInnerContent(SIGN_UP_STATE signUpState) {
+    final theme = Theme.of(context);
+    switch(signUpState) {
+      case SIGN_UP_STATE.FORM:
+        // This should not happen
+        return Container();
+      case SIGN_UP_STATE.BIRTHDAY:
+        return Container(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
+              children: [
+                SizedBox(height: 20,),
+                Image.asset("assets/images/progress_bday.png"),
+                Expanded(child: Image.asset("assets/images/bday.png")),
+                SizedBox(height: 15,),
+                Text("When is your birthday?", style: theme.textTheme.headline3?.copyWith(color: theme.primaryColor)),
+                SizedBox(height: 5,),
+                Text("Please enter your birthday", style: theme.textTheme.subtitle2,),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  child: DatePickerWidget(
+                    firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                    lastDate: DateTime.now(),
+                    initialDate: DateTime(1990, 1, 1),
+                    pickerTheme: DateTimePickerTheme(dividerColor: Theme.of(context).primaryColor),
+                  ),
+                ),
+                MaterialButton(
+                  onPressed: (){
+                    _onNext();
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.chevron_right_sharp, size: 30,),
+                    ),
+                  ),
+                  shape: CircleBorder(),
+                  color: theme.primaryColor,
+                  textColor: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        );
+      case SIGN_UP_STATE.LOCATION:
+        return Container(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
+              children: [
+                SizedBox(height: 20,),
+                Image.asset("assets/images/progress_zip.png"),
+                Expanded(child: Image.asset("assets/images/zip.png")),
+                SizedBox(height: 15,),
+                Text("Where are you from?", style: theme.textTheme.headline3?.copyWith(color: theme.primaryColor)),
+                SizedBox(height: 5,),
+                Text("This helps us to locate the nearest blood center", style: theme.textTheme.subtitle2,),
+                CountryCodePicker(
+                  initialSelection: 'US',
+                  showCountryOnly: true,
+                  showDropDownButton: true,
+                  showOnlyCountryWhenClosed: true,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: "Enter your ZIP code",
+                      labelText: "ZIP code",
+                    ),
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                MaterialButton(
+                  onPressed: (){
+                    _onNext();
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.chevron_right_sharp, size: 30,),
+                    ),
+                  ),
+                  shape: CircleBorder(),
+                  color: theme.primaryColor,
+                  textColor: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        );
+      case SIGN_UP_STATE.BLOOD_GROUP:
+        return Container(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
+              children: [
+                SizedBox(height: 20,),
+                Image.asset("assets/images/progress_bloodgroup.png"),
+                Expanded(child: Image.asset("assets/images/bg.png")),
+                SizedBox(height: 15,),
+                Text("What's your blood group?", style: theme.textTheme.headline3?.copyWith(color: theme.primaryColor)),
+                SizedBox(height: 5,),
+                Text("Choose your blood group", style: theme.textTheme.subtitle2,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.65,
+                    height: 100,
+                    child: CupertinoPicker.builder(
+                      selectionOverlay: Container(
+                        decoration: BoxDecoration(border: Border.symmetric(horizontal: BorderSide(color: theme.primaryColor, width: 2.0))),
+                      ),
+                      itemExtent: 30,
+                      squeeze: 0.95,
+                      diameterRatio: 2.0,
+                      magnification: 1.3,
+                      onSelectedItemChanged: (item){
+                        //TODO
+                      },
+                      childCount: BLOOD_GROUPS.length,
+                      itemBuilder: (context, index){
+                        return Center(child: Text(BLOOD_GROUPS[index]));
+                      },
+                    )
+                  ),
+                ),
+                MaterialButton(
+                  onPressed: (){
+                    _onNext();
+                  },
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.chevron_right_sharp, size: 30,),
+                    ),
+                  ),
+                  shape: CircleBorder(),
+                  color: theme.primaryColor,
+                  textColor: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        );
+    }
+  }
+
+  Widget _getBody(SIGN_UP_STATE signUpState, ThemeData theme) {
+    if(signUpState == SIGN_UP_STATE.FORM) {
+      return SignUpBasicForm(onNext: _onNext,);
+    }
+    else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+              child: LinearProgressIndicator(
+                value: _getProgress(signUpState),
+                minHeight: 6,
+                valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
+                backgroundColor: theme.accentColor,
+              ),
+            ),
+            Expanded(child: _getInnerContent(signUpState)),
+          ],
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.all(30),
-        child: Column(
-          children: [
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Image.asset(
-                  "assets/icons/blood_drop_auth.png",
-                  width: MediaQuery.of(context).size.width * 0.5,
-                ),
-              ),
-              flex: 1,
-            ),
-            Expanded(
-              flex: 2,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Hey there!", style: theme.textTheme.headline3,),
-                  Text("Every treasure needs it's lock", style: theme.textTheme.subtitle2),
-                  Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          CustomTextFormField(
-                            decoration: _getInputDecoration(theme, Icons.email_outlined, "E-Mail address"),
-                            focusColor: theme.accentColor,
-                            unfocusedColor: theme.backgroundColor,
-                          ),
-                          SizedBox(height:10),
-                          CustomTextFormField(
-                            decoration: _getInputDecoration(theme, Icons.phone, "Phone number"),
-                            focusColor: theme.accentColor,
-                            unfocusedColor: theme.backgroundColor,
-                          ),
-                          SizedBox(height:10),
-                          CustomTextFormField(
-                            decoration: _getInputDecoration(theme, Icons.lock, "Password")
-                                .copyWith(suffixIcon: InkWell(child: Icon(Icons.remove_red_eye_outlined),)),
-                            focusColor: theme.accentColor,
-                            unfocusedColor: theme.backgroundColor,
-                            passwordField: true,
-                          )
-                        ],
-                      ),
-                  ),
-                  RichText(text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "By signing up, you agree to ",
-                        style: theme.textTheme.bodyText2
-                      ),
-                      TextSpan(
-                        text: "Our Terms",
-                        style: theme.textTheme.bodyText2?.copyWith(color: theme.primaryColor),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = (){/*TODO*/}
-                      )
-                    ]
-                  )),
-                  MaterialButton(
-                    onPressed: (){
-                      //TODO
-                    },
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(Icons.chevron_right_sharp, size: 30,),
-                      ),
-                    ),
-                    shape: CircleBorder(),
-                    color: theme.primaryColor,
-                    textColor: Colors.white,
-                  ),
-                  RichText(text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: "Continue as guest",
-                            style: theme.textTheme.bodyText2,
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = (){/*TODO*/}
-                        )
-                      ]
-                  )),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                "Or join using",
-                                style: theme.textTheme.bodyText2,
-                                textAlign: TextAlign.center,)
-                            ),
-                            Expanded(
-                              child: MaterialButton(
-                                onPressed: (){
-                                  //TODO
-                                },
-                                child: Center(
-                                  child: FaIcon(FontAwesomeIcons.google),
-                                ),
-                                shape: CircleBorder(),
-                                color: theme.primaryColor,
-                                textColor: Colors.white,
-                              ),
-                            ),
-                            Expanded(
-                              child: MaterialButton(
-                                onPressed: (){
-                                  //TODO
-                                },
-                                child: Center(
-                                  child: FaIcon(FontAwesomeIcons.facebook),
-                                ),
-                                shape: CircleBorder(),
-                                color: theme.primaryColor,
-                                textColor: Colors.white,
-                              ),
-                            ),
-                            Expanded(
-                              child: MaterialButton(
-                                onPressed: (){
-                                  //TODO
-                                },
-                                child: Center(
-                                  child: FaIcon(FontAwesomeIcons.twitter),
-                                ),
-                                shape: CircleBorder(),
-                                color: theme.primaryColor,
-                                textColor: Colors.white,
-                              ),
-                            ),
-                          ]
-                        ),
-                      ),
-                    ],
-                  ),
-                  RichText(text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: "Already a member? ",
-                            style: theme.textTheme.bodyText2
-                        ),
-                        TextSpan(
-                            text: "Log in",
-                            style: theme.textTheme.bodyText2?.copyWith(color: theme.primaryColor),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = (){/*TODO*/}
-                        )
-                      ]
-                  )),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: SafeArea(
+          child: SingleChildScrollView(
+              child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: _getBody(_signUpState, theme))
+          )
       ),
     );
   }
