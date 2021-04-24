@@ -312,6 +312,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(color: Colors.white),
       child: SingleChildScrollView(
         child: Column(
           children: [

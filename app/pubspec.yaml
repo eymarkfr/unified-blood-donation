@@ -34,6 +34,10 @@ dependencies:
   qr_flutter: ^4.0.0
   gradient_widgets: ^0.6.0
   jiffy: ^4.1.0
+  google_maps_flutter: ^2.0.3
+  location: ^4.1.1
+  tuple: ^2.0.0
+  faker: ^2.0.0-rc.2
 
 dev_dependencies:
   flutter_test:

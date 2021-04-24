@@ -236,6 +236,7 @@ class _SingUpPageState extends State<SingUpPage> {
       body: SafeArea(
           child: SingleChildScrollView(
               child: Container(
+                decoration: BoxDecoration(color: Colors.white),
                   height: MediaQuery.of(context).size.height,
                   child: _getBody(_signUpState, theme))
           )

@@ -1,7 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ubd/models/blood_bank.dart';
+import 'package:ubd/views/home/heroes.dart';
+import 'package:ubd/views/home/history.dart';
+import 'package:ubd/views/home/home.dart';
 import 'package:ubd/views/home/profile.dart';
 import 'package:ubd/views/quick_id.dart';
 import 'package:ubd/views/auth/sign_up.dart';
+import 'package:ubd/widgets/blood_bank_card.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,6 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
+
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -38,15 +47,17 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: MaterialColor(0xFFC40F0F, color),
-        accentColor: Color(0xFFC40F0F).withOpacity(0.0784313725490196),
+        accentColor: Color(0xFFFBEEEE),
         backgroundColor: Colors.white,
         textTheme: TextTheme(
           headline3: TextStyle(color: Color(0xff191919), fontSize: 24),
           headline4: TextStyle(color: Color(0xff191919), fontSize: 20, fontWeight: FontWeight.bold),
+          headline5: TextStyle(color: Color(0xff191919), fontSize: 15, fontWeight: FontWeight.bold),
           subtitle1: TextStyle(color: Color(0xff191919), fontSize: 14),
           subtitle2: TextStyle(color: Color(0xaa191919), fontSize: 14),
-          bodyText2: TextStyle(color: Colors.black, fontSize: 14)
+          bodyText2: TextStyle(color: Colors.black, fontSize: 14),
         ),
+        bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.transparent)
       ),
       home: MyHomePage(), //SingUpPage(),
     );
@@ -60,16 +71,50 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _bottomNavbarIndex = 0;
+  List<BloodBank> _bloodBanks = [];
+  LatLng? _location;
 
   Widget _getView(int index) {
     switch(index) {
+      case 1: return HistoryView();
+      case 2: return HeroesView();
+      case 3: return ProfileView();
       case 0:
-      case 1:
-      case 2:
-      case 3:
       default:
-        return ProfileView();
+        return HomeView(showBloodBanks: (bloodBanks, location){
+          bloodBanks.sort((a,b)=>a.distance(location).compareTo(b.distance(location)));
+          setState(() {
+            _bloodBanks = bloodBanks;
+            _location = location;
+          });
+        },);
     }
+  }
+
+  Widget? _getBottomSheet() {
+    if(_bloodBanks.isNotEmpty) {
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.25,
+        minChildSize: 0.1,
+        builder: (context, scrollController) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            margin: EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+            child: ListView.builder(
+              itemCount: _bloodBanks.length,
+              controller: scrollController,
+              itemBuilder: (context, index) {
+                return BloodBankListItem(bloodBank: _bloodBanks[index], currentLocation: _location,);
+              }
+            )
+          );
+        }
+      );
+    }
+
+    return Container(height: 0,);
   }
 
   @override
@@ -77,11 +122,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: SafeArea(child: _getView(_bottomNavbarIndex),),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         currentIndex: _bottomNavbarIndex,
         type: BottomNavigationBarType.fixed,
         onTap: (newIndex){
           setState(() {
             _bottomNavbarIndex = newIndex;
+            _bloodBanks = [];
           });
         },
         items: [
@@ -91,6 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
         ],
       ),
+      bottomSheet: _getBottomSheet(),
     );
   }
 }
