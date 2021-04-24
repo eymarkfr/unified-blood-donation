@@ -1,4 +1,4 @@
-const BLOOD_GROUPS = [
+const BLOOD_TYPES = [
   "A-",
   "B-",
   "AB-",

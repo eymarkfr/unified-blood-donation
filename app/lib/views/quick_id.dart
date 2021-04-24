@@ -12,7 +12,6 @@ class _QuickIdViewState extends State<QuickIdView> {
     final theme = Theme.of(context);
     final containerSize = MediaQuery.of(context).size.width - 20;
     final qrSize = containerSize * 0.65;
-    final imageSize = (containerSize - 0.5*qrSize) * 0.4;
     return Scaffold(
       backgroundColor: Color(0xff676B73),
       body: SafeArea(

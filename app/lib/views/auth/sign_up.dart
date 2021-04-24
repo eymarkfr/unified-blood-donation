@@ -175,9 +175,9 @@ class _SingUpPageState extends State<SingUpPage> {
                       onSelectedItemChanged: (item){
                         //TODO
                       },
-                      childCount: BLOOD_GROUPS.length,
+                      childCount: BLOOD_TYPES.length,
                       itemBuilder: (context, index){
-                        return Center(child: Text(BLOOD_GROUPS[index]));
+                        return Center(child: Text(BLOOD_TYPES[index]));
                       },
                     )
                   ),
