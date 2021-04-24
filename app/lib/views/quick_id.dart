@@ -112,7 +112,7 @@ class _QuickIdViewState extends State<QuickIdView> {
               Center(
                 child: ElevatedButton(
                     onPressed: (){
-                      // TODO Cancel
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xfff4f4f4),

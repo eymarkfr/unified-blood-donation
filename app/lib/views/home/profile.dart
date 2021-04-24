@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:ubd/utils.dart';
+import 'package:ubd/views/quick_id.dart';
 
 class ProfileView extends StatefulWidget {
   @override
@@ -157,7 +158,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))),
                       onPressed: (){
-                        // TODO
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>QuickIdView()));
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
