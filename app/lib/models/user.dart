@@ -1,12 +1,15 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ubd/constants.dart';
 import 'package:ubd/utils.dart';
 import 'package:ubd/utils/random_date.dart';
-
+import 'package:json_annotation/json_annotation.dart';
 import 'blood_bank.dart';
+part 'user.g.dart';
 
 const GENDERS = [
   "male",
@@ -14,25 +17,26 @@ const GENDERS = [
   "other"
 ];
 
+@JsonSerializable()
 class User {
   final String userId;
-  final String firstName;
-  final String lastName;
+  final String? firstName;
+  final String? lastName;
   final String email;
-  final String phoneNumber;
+  final String? phoneNumber;
 
-  final int height;
-  final int weight;
-  final String gender;
+  final int? height;
+  final int? weight;
+  final String? gender;
 
   final String country;
   final String zipCode;
   final DateTime birthday;
   final String bloodGroup;
 
-  final int xp;
+  final int? xp;
   final int? unitsDonated;
-  final String teamId;
+  final String? teamId;
   final String imageUrl;
   final List<DonationHistoryItem> donationHistory;
 
@@ -42,12 +46,16 @@ class User {
     assert(unitsDonated == null || unitsDonated! >= 0);
   }
 
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
+
   bool isDonor(String bloodTypeRecipient) {
     return isValidDonor(bloodTypeRecipient, this.bloodGroup);
   }
 
-  double bmi() {
-    return weight / (height*height);
+  double? bmi() {
+    if(weight == null || height == null) return null;
+    return weight! / (height!*height!);
   }
 
   int getAge() {
@@ -62,6 +70,14 @@ class User {
 
     return List<DonationHistoryItem>.generate(n, (index) => DonationHistoryItem(banks[index], dates[index]));
   }
+}
+
+DocumentReference? getUserDocument() {
+  final user = FirebaseAuth.instance.currentUser;
+  if(user == null) {
+    return null;
+  }
+  return FirebaseFirestore.instance.collection("users").doc(user.uid);
 }
 
 class DonationHistoryItem {

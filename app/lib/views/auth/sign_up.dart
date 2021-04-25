@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:ubd/constants.dart';
+import 'package:ubd/models/user.dart';
 import 'package:ubd/widgets/auth/sign_up_initial.dart';
 
 enum SIGN_UP_STATE {
@@ -20,6 +23,22 @@ class SingUpPage extends StatefulWidget {
 class _SingUpPageState extends State<SingUpPage> {
 
   SIGN_UP_STATE _signUpState = SIGN_UP_STATE.FORM;
+  final _zipController = TextEditingController();
+
+  final initialCountry = "US";
+  final initialDate = DateTime(1990, 1, 1);
+
+  String _bloodType = "A-";
+  DateTime? _selectedDate;
+  String? _selectedCountry;
+  String? _zipCode;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedDate = initialDate;
+  }
 
   void _onNext() {
     SIGN_UP_STATE nextState = SIGN_UP_STATE.FORM;
@@ -76,12 +95,23 @@ class _SingUpPageState extends State<SingUpPage> {
                   child: DatePickerWidget(
                     firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
                     lastDate: DateTime.now(),
-                    initialDate: DateTime(1990, 1, 1),
+                    initialDate: initialDate,
+                    dateFormat: "dd-MMMM-yyyy",
+                    onChange: (date, _) {
+                      _selectedDate = date;
+                    },
                     pickerTheme: DateTimePickerTheme(dividerColor: Theme.of(context).primaryColor),
                   ),
                 ),
                 MaterialButton(
                   onPressed: (){
+                    final userDoc = getUserDocument();
+                    if(userDoc == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Failed to set birthday. Please set from settings"))
+                      );
+                    }
+                    userDoc?.update({"birthday": _selectedDate});
                     _onNext();
                   },
                   child: Center(
@@ -116,10 +146,14 @@ class _SingUpPageState extends State<SingUpPage> {
                   showCountryOnly: true,
                   showDropDownButton: true,
                   showOnlyCountryWhenClosed: true,
+                  onChanged: (code) {
+                    _selectedCountry = code.code;
+                  },
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.65,
                   child: TextFormField(
+                    controller: _zipController,
                     decoration: InputDecoration(
                       hintText: "Enter your ZIP code",
                       labelText: "ZIP code",
@@ -130,6 +164,17 @@ class _SingUpPageState extends State<SingUpPage> {
                 SizedBox(height: 20,),
                 MaterialButton(
                   onPressed: (){
+                    final userDoc = getUserDocument();
+                    if(userDoc == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Failed to set country and zip code. Please set from settings"))
+                      );
+                    }
+                    _zipCode = _zipController.text;
+                    userDoc?.update({
+                      "country": _selectedCountry,
+                      "zipCode": _zipCode,
+                    });
                     _onNext();
                   },
                   child: Center(
@@ -172,8 +217,8 @@ class _SingUpPageState extends State<SingUpPage> {
                       squeeze: 0.95,
                       diameterRatio: 2.0,
                       magnification: 1.3,
-                      onSelectedItemChanged: (item){
-                        //TODO
+                      onSelectedItemChanged: (int item){
+                        _bloodType = BLOOD_TYPES[item];
                       },
                       childCount: BLOOD_TYPES.length,
                       itemBuilder: (context, index){
@@ -184,6 +229,16 @@ class _SingUpPageState extends State<SingUpPage> {
                 ),
                 MaterialButton(
                   onPressed: (){
+                    final userDoc = getUserDocument();
+                    if(userDoc == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Failed to set country and zip code. Please set from settings"))
+                      );
+                    }
+                    _zipCode = _zipController.text;
+                    userDoc?.update({
+                      "bloodGroup": _bloodType,
+                    });
                     _onNext();
                   },
                   child: Center(

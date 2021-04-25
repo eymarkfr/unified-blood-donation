@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ubd/models/blood_bank.dart';
@@ -12,11 +14,45 @@ import 'package:ubd/views/auth/sign_up.dart';
 import 'package:ubd/widgets/blood_bank_card.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initialization,
+      builder: (context, snapshot) {
+        if(snapshot.hasError) {
+          log(snapshot.error.toString());
+          return Container();
+        }
+        if(snapshot.connectionState == ConnectionState.done) {
+          return MainApp();
+        }
+
+        return MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                Center(
+                  child: CircularProgressIndicator(),
+                )
+              ],
+            ),
+          ),
+        );
+      }
+    );
+  }
+}
+
+class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Map<int, Color> color =
@@ -46,24 +82,25 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: MaterialColor(0xFFC40F0F, color),
-        accentColor: Color(0xFFFBEEEE),
-        backgroundColor: Colors.white,
-        fontFamily: "Poppins",
-        textTheme: TextTheme(
-          headline3: TextStyle(color: Color(0xff191919), fontSize: 24),
-          headline4: TextStyle(color: Color(0xff191919), fontSize: 20, fontWeight: FontWeight.bold),
-          headline5: TextStyle(color: Color(0xff191919), fontSize: 15, fontWeight: FontWeight.bold),
-          subtitle1: TextStyle(color: Color(0xff191919), fontSize: 14),
-          subtitle2: TextStyle(color: Color(0xaa191919), fontSize: 14),
-          bodyText2: TextStyle(color: Colors.black, fontSize: 14),
-        ),
-        bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.transparent)
+          primarySwatch: MaterialColor(0xFFC40F0F, color),
+          accentColor: Color(0xFFFBEEEE),
+          backgroundColor: Colors.white,
+          fontFamily: "Poppins",
+          textTheme: TextTheme(
+            headline3: TextStyle(color: Color(0xff191919), fontSize: 24),
+            headline4: TextStyle(color: Color(0xff191919), fontSize: 20, fontWeight: FontWeight.bold),
+            headline5: TextStyle(color: Color(0xff191919), fontSize: 15, fontWeight: FontWeight.bold),
+            subtitle1: TextStyle(color: Color(0xff191919), fontSize: 14),
+            subtitle2: TextStyle(color: Color(0xaa191919), fontSize: 14),
+            bodyText2: TextStyle(color: Colors.black, fontSize: 14),
+          ),
+          bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.transparent)
       ),
       home: MyHomePage(), //SingUpPage(),
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -75,11 +112,13 @@ class _MyHomePageState extends State<MyHomePage> {
   List<BloodBank> _bloodBanks = [];
   LatLng? _location;
   PageController? _pageController;
+  User? _user;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    _user = FirebaseAuth.instance.currentUser;
   }
 
   @override
@@ -131,6 +170,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if(_user == null) {
+      return SingUpPage();
+    }
+
     return Scaffold(
       body: SafeArea(
           child: PageView(

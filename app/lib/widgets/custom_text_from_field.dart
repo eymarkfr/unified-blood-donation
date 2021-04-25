@@ -7,14 +7,17 @@ class CustomTextFormField extends StatefulWidget {
   final Color? focusColor;
   final Color? unfocusedColor;
   final bool? passwordField;
-
+  final FormFieldValidator? validator;
+  final TextEditingController? controller;
 
   const CustomTextFormField({
     Key? key,
     required this.decoration,
     this.focusColor,
     this.unfocusedColor,
-    this.passwordField
+    this.passwordField,
+    this.validator,
+    this.controller
   }) : super(key: key);
 
   @override
@@ -65,7 +68,9 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return TextFormField(
       decoration: decoration,
       focusNode: _textFieldFocus,
-      obscureText: _obscureText
+      obscureText: _obscureText,
+      validator: widget.validator,
+      controller: widget.controller,
     );
   }
 }
