@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: MaterialColor(0xFFC40F0F, color),
         accentColor: Color(0xFFFBEEEE),
         backgroundColor: Colors.white,
+        fontFamily: "Poppins",
         textTheme: TextTheme(
           headline3: TextStyle(color: Color(0xff191919), fontSize: 24),
           headline4: TextStyle(color: Color(0xff191919), fontSize: 20, fontWeight: FontWeight.bold),
@@ -114,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    return Container(height: 0,);
+    return null; //Container(height: 0,);
   }
 
   @override
