@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:ubd/models/user.dart';
 
 class QuickIdView extends StatefulWidget {
   @override
@@ -7,11 +8,88 @@ class QuickIdView extends StatefulWidget {
 }
 
 class _QuickIdViewState extends State<QuickIdView> {
+
+  Widget _getId(UserProfile user, double containerSize, double qrSize, ThemeData theme) {
+    return Stack(
+      children: [
+        Center(
+          child: Container(
+              height: containerSize,
+              width: containerSize,
+              decoration: BoxDecoration(color: theme.primaryColor, borderRadius: BorderRadius.circular(10)),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  height: containerSize - 0.5*qrSize,
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(1000),
+                              child: Image.asset(
+                                "assets/images/emily.png",
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Text("${user.firstName} ${user.lastName}, ${user.getAge()}", style: theme.textTheme.headline4?.copyWith(color: Colors.white),),
+                            SizedBox(height: 5,),
+                            Text("#ID${user.userId}", style: theme.textTheme.subtitle2?.copyWith(color: Colors.white),),
+                            SizedBox(height: 25,)
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              )
+          ),
+        ),
+        Column(
+          children: [
+            SizedBox(height: containerSize - 0.5*qrSize,),
+            Center(
+              child: Container(
+                height: qrSize,
+                width: qrSize,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/qr_background.png"),
+                          fit: BoxFit.fill
+                      )
+                  ),
+                  child: QrImage(
+                    data: user.userId,
+                    foregroundColor: theme.primaryColor,
+                    backgroundColor: Colors.white,
+                    gapless: false,
+                    padding: EdgeInsets.all(0),
+                  ),
+                ),
+              ),
+            )
+          ],
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final containerSize = MediaQuery.of(context).size.width - 20;
     final qrSize = containerSize * 0.65;
+    //final user = getUserDocument()
     return Scaffold(
       backgroundColor: Color(0xff676B73),
       body: SafeArea(
@@ -33,77 +111,14 @@ class _QuickIdViewState extends State<QuickIdView> {
                         ),
                       ),
                       SizedBox(height: 30,),
-                      Stack(
-                        children: [
-                          Center(
-                            child: Container(
-                              height: containerSize,
-                              width: containerSize,
-                              decoration: BoxDecoration(color: theme.primaryColor, borderRadius: BorderRadius.circular(10)),
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: SizedBox(
-                                  height: containerSize - 0.5*qrSize,
-                                  child: Container(
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(1000),
-                                                child: Image.asset(
-                                                  "assets/images/emily.png",
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                          ),
-                                        ),
-                                        Column(
-                                          children: [
-                                            Text("Emily Jones, 24", style: theme.textTheme.headline4?.copyWith(color: Colors.white),),
-                                            SizedBox(height: 5,),
-                                            Text("#ID390123", style: theme.textTheme.subtitle2?.copyWith(color: Colors.white),),
-                                            SizedBox(height: 25,)
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              SizedBox(height: containerSize - 0.5*qrSize,),
-                              Center(
-                                child: Container(
-                                  height: qrSize,
-                                  width: qrSize,
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-                                  child: Container(
-                                    padding: EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage("assets/images/qr_background.png"),
-                                        fit: BoxFit.fill
-                                      )
-                                    ),
-                                    child: QrImage(
-                                      data: "TODO",
-                                      foregroundColor: theme.primaryColor,
-                                      backgroundColor: Colors.white,
-                                      gapless: false,
-                                      padding: EdgeInsets.all(0),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
+                      FutureBuilder(
+                        future: getUserProfile(),
+                          builder: (context, AsyncSnapshot<UserProfile?> profile) {
+                              if(profile.hasData) {
+                                return _getId(profile.data!, containerSize, qrSize, theme);
+                              }
+                              return Container();
+                          }
                       ),
                     ],
                   ),

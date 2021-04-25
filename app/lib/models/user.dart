@@ -108,6 +108,15 @@ DocumentReference? getUserDocument() {
   return FirebaseFirestore.instance.collection("users").doc(user.uid);
 }
 
+Future<UserProfile?> getUserProfile() async {
+  final docRef = getUserDocument();
+  if(docRef == null) {
+    return null;
+  }
+  final doc = await docRef.get();
+  return UserProfile.fromJson(doc.data()!);
+}
+
 class DonationHistoryItem {
   final BloodBank bloodBank;
   final DateTime date;

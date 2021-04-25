@@ -100,7 +100,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
               children: [
                 Text("Units donated", style: headerStyle,),
                 verticalSpacer,
-                Text(unitsDonated?.toString() ?? "0" , style: contentStyle),
+                Text(unitsDonated?.toString() ?? "10" , style: contentStyle),
               ],
             ),
           ),
