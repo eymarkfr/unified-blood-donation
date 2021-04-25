@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ubd/models/user.dart';
+import 'package:ubd/widgets/safe_image.dart';
 
 class QuickIdView extends StatefulWidget {
   @override
@@ -27,13 +28,7 @@ class _QuickIdViewState extends State<QuickIdView> {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(1000),
-                              child: Image.asset(
-                                "assets/images/emily.png",
-                                fit: BoxFit.fill,
-                              ),
-                            ),
+                            child: CircleAvatar(backgroundImage: getSafeImageProvider("assets/images/emily.png", user.imageUrl), radius:70,),
                           ),
                         ),
                         Column(

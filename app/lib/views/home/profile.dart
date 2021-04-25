@@ -1,15 +1,21 @@
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:ubd/models/user.dart';
 import 'package:ubd/utils.dart';
 import 'package:ubd/views/auth/sign_up.dart';
 import 'package:ubd/views/quick_id.dart';
+import 'package:image/image.dart' as ImageLibrary;
+import 'package:ubd/widgets/safe_image.dart';
 
 class ProfileView extends StatefulWidget {
 
@@ -19,9 +25,28 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStateMixin {
   final _imageSize = 120.0;
+  final _imagePicker = ImagePicker();
   TabController? _tabController;
 
-  Widget _getHeaderRow() {
+  void _handleProfileImageEdit() async {
+    final pickedFile = await _imagePicker.getImage(source: ImageSource.gallery);
+    if(pickedFile == null) return;
+    final file = File(pickedFile.path);
+    var image = ImageLibrary.decodeImage(file.readAsBytesSync());
+    var thumbnail = ImageLibrary.copyResize(image!, width: 350);
+    var storageRef = FirebaseStorage.instance
+      .ref()
+      .child("images")
+      .child("${FirebaseAuth.instance.currentUser!.uid}.jpg");
+    final metadata = SettableMetadata(
+        contentType: 'image/jpeg',
+        customMetadata: {'picked-file-path': file.path});
+    var uploadTask = storageRef.putData(Uint8List.fromList(ImageLibrary.encodeJpg(thumbnail, quality: 70)), metadata);
+    var result = await uploadTask;
+    getUserDocument()?.update({"imageUrl": await result.ref.getDownloadURL()});
+  }
+
+  Widget _getHeaderRow(UserProfile userProfile) {
     return Container(
       height: _imageSize*1.05,
       child: Row(
@@ -44,7 +69,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
               Stack(
                 children: [
                   ClipRRect(
-                    child: Image.asset("assets/images/emily.png", width: _imageSize, height: _imageSize, fit: BoxFit.fill,),
+                    child: SafeUrlImage(imageUrl: userProfile.imageUrl, placeholderAsset:"assets/images/emily.png", width: _imageSize, height: _imageSize, fit: BoxFit.fill,),
                     borderRadius: BorderRadius.circular(1000),
                   ),
                   Container(
@@ -53,7 +78,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                     child: Align(
                       alignment: Alignment.bottomRight,
                       child: FloatingActionButton(
-                        onPressed: (){},
+                        onPressed: _handleProfileImageEdit,
                         backgroundColor: Colors.white,
                         mini: true,
                         child: Icon(Icons.edit_outlined, color: Colors.black,),
@@ -142,7 +167,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
       ),
     );
   }
-  Widget _getQuickIDRow(String name, int age) {
+  Widget _getQuickIDRow(String name, int age, String? imageUrl) {
     final theme = Theme.of(context);
     const containerHeight = 90.0;
     const buttonHeight = 40.0;
@@ -158,7 +183,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
               children: [
                 Row(
                   children: [
-                    CircleAvatar(backgroundImage: AssetImage("assets/images/emily.png"), radius: 0.25*containerHeight,),
+                    CircleAvatar(backgroundImage: getSafeImageProvider("assets/images/emily.png", imageUrl), radius: 0.25*containerHeight,),
                     SizedBox(width: 15,),
                     Text("$name, $age", style: theme.textTheme.headline4,)
                   ],
@@ -341,13 +366,13 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
               return Column(
                 children: [
                   const SizedBox(height: 10,),
-                  _getHeaderRow(),
+                  _getHeaderRow(user),
                   const SizedBox(height: 20,),
                   _getInfoRow(user.bloodGroup, user.unitsDonated ?? 0),
                   const SizedBox(height: 20,),
                   _getXPRow(1200),
                   const SizedBox(height: 30,),
-                  _getQuickIDRow("${user.firstName} ${user.lastName}", user.getAge()),
+                  _getQuickIDRow("${user.firstName} ${user.lastName}", user.getAge(), user.imageUrl),
                   const SizedBox(height: 30,),
                   _getTabs(user)
                 ],
