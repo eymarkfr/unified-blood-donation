@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:ubd/models/blood_bank.dart';
+import 'package:ubd/models/user.dart';
 
 import 'package:ubd/utils.dart';
 
 class HomeView extends StatefulWidget {
   final void Function(List<BloodBank>, LatLng?) showBloodBanks;
+  final User? user;
 
-  const HomeView({Key? key, required this.showBloodBanks}) : super(key: key);
+  const HomeView({Key? key, required this.showBloodBanks, this.user}) : super(key: key);
 
   @override
   _HomeViewState createState() => _HomeViewState();
@@ -21,6 +24,7 @@ class _HomeViewState extends State<HomeView> {
   Location _location = Location();
   LocationData? _locationData;
   List<BloodBank> _nearbyBloodBanks = [];
+  String _title = "";
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
 
   void _createMarker(List<BloodBank> bloodBanks) {
@@ -66,8 +70,25 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
+  void _getTitle() async {
+    final doc = getUserDocument();
+    String title = "";
+    if(doc == null) {
+      title = "Hey there!";
+    } else {
+      final values = await doc.get();
+      final firstName = values.data()!["firstName"];
+      title = "Hey, $firstName!";
+    }
+
+    setState(() {
+      _title = title;
+    });
+  }
+
   @override
   void initState() {
+    _getTitle();
     super.initState();
   }
 
@@ -76,7 +97,6 @@ class _HomeViewState extends State<HomeView> {
     if(_locationData == null) {
       locationSetup();
     }
-    final userName = "Emilie";
     return Container(
       child: Stack(
         children: [
@@ -111,7 +131,7 @@ class _HomeViewState extends State<HomeView> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Expanded(child: Container()),
-                        Expanded(child: Text("Hey, $userName!", style: Theme.of(context).textTheme.headline4, textAlign: TextAlign.center,)),
+                        Expanded(child: Text(_title, style: Theme.of(context).textTheme.headline4, textAlign: TextAlign.center,)),
                         Expanded(child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Align(alignment: Alignment.centerRight, child: Icon(Icons.search_sharp),),

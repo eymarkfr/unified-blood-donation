@@ -24,7 +24,7 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _phoneController = TextEditingController();
+  final _nameController = TextEditingController();
   SignInPageState _pageState = SignInPageState.SIGN_IN;
   String? _manualUsernameError;
 
@@ -88,7 +88,14 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
       final credentials = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       final doc = FirebaseFirestore.instance.collection("users").doc(credentials.user!.uid);
-      doc.set({"phoneNumber":_phoneController.text});
+      final nameParts = _nameController.text.split(" ");
+      final firstName = nameParts[0];
+      final lastName = nameParts[nameParts.length - 1];
+      doc.set({
+        "firstName": firstName,
+        "lastName": lastName,
+        "email": email,
+      });
       widget.onNext();
     } on FirebaseAuthException catch(e) {
       print(e.toString());
@@ -145,6 +152,17 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
                   key: _formKey,
                   child: Column(
                     children: [
+                      if (_pageState == SignInPageState.SIGN_UP)
+                        CustomTextFormField(
+                          key: Key("name"),
+                          decoration: _getInputDecoration(
+                              theme, Icons.person, "Enter your first and last name"),
+                          focusColor: theme.accentColor,
+                          controller: _nameController,
+                          unfocusedColor: theme.backgroundColor,
+                        ),
+                      if (_pageState == SignInPageState.SIGN_UP)
+                        const SizedBox(height: 10),
                       CustomTextFormField(
                           key: Key("mail"),
                           decoration: _getInputDecoration(
@@ -157,18 +175,7 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
                                 ? null
                                 : "Please check your mail";
                           }),
-                      if (_pageState == SignInPageState.SIGN_UP)
-                        SizedBox(height: 10),
-                      if (_pageState == SignInPageState.SIGN_UP)
-                        CustomTextFormField(
-                          key: Key("phone"),
-                          decoration: _getInputDecoration(
-                              theme, Icons.phone, "Phone number"),
-                          focusColor: theme.accentColor,
-                          controller: _phoneController,
-                          unfocusedColor: theme.backgroundColor,
-                        ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       CustomTextFormField(
                         key: Key("password"),
                         decoration:
@@ -275,8 +282,8 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
                               child: FaIcon(FontAwesomeIcons.google),
                             ),
                             shape: CircleBorder(),
-                            color: theme.primaryColor,
-                            textColor: Colors.white,
+                            color: theme.accentColor,
+                            textColor: theme.primaryColor,
                           ),
                         ),
                         Expanded(
@@ -288,8 +295,8 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
                               child: FaIcon(FontAwesomeIcons.facebook),
                             ),
                             shape: CircleBorder(),
-                            color: theme.primaryColor,
-                            textColor: Colors.white,
+                            color: theme.accentColor,
+                            textColor: theme.primaryColor,
                           ),
                         ),
                         Expanded(
@@ -301,8 +308,8 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
                               child: FaIcon(FontAwesomeIcons.twitter),
                             ),
                             shape: CircleBorder(),
-                            color: theme.primaryColor,
-                            textColor: Colors.white,
+                            color: theme.accentColor,
+                            textColor: theme.primaryColor,
                           ),
                         ),
                       ]),

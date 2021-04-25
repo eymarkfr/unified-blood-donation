@@ -3,7 +3,7 @@ import 'package:ubd/models/user.dart';
 
 class HeroCard extends StatelessWidget {
 
-  final User hero;
+  final UserProfile hero;
 
   const HeroCard({Key? key, required this.hero}) : super(key: key);
 
@@ -12,7 +12,7 @@ class HeroCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(5, 7, 10, 8),
       child: Row(
         children: [
-          CircleAvatar(backgroundImage: NetworkImage(hero.imageUrl), minRadius: 25,),
+          CircleAvatar(backgroundImage: NetworkImage(hero.imageUrl ?? ""), minRadius: 25,),
           const SizedBox(width: 20,),
           Text("${hero.firstName} ${hero.lastName}, ${hero.getAge()}", style: Theme.of(context).textTheme.headline5?.copyWith(fontWeight: FontWeight.w600),)
         ],

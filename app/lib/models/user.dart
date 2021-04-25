@@ -18,7 +18,7 @@ const GENDERS = [
 ];
 
 @JsonSerializable()
-class User {
+class UserProfile {
   final String userId;
   final String? firstName;
   final String? lastName;
@@ -37,17 +37,45 @@ class User {
   final int? xp;
   final int? unitsDonated;
   final String? teamId;
-  final String imageUrl;
+  final String? imageUrl;
   final List<DonationHistoryItem> donationHistory;
 
-  User(this.userId, this.firstName, this.lastName, this.email, this.phoneNumber, this.height, this.weight, this.gender, this.country, this.zipCode, this.birthday, this.bloodGroup, this.xp, this.unitsDonated, this.teamId, this.imageUrl, [List<DonationHistoryItem>? history]) : this.donationHistory = history ?? [] {
+  UserProfile(this.userId, this.firstName, this.lastName, this.email, this.phoneNumber, this.height, this.weight, this.gender, this.country, this.zipCode, this.birthday, this.bloodGroup, this.xp, this.unitsDonated, this.teamId, this.imageUrl, [List<DonationHistoryItem>? history]) : this.donationHistory = history ?? [] {
     assert(isValidBloodType(this.bloodGroup));
-    assert(GENDERS.contains(this.gender));
+    assert(gender == null || GENDERS.contains(this.gender));
     assert(unitsDonated == null || unitsDonated! >= 0);
   }
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  factory UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
+  Map<String, dynamic> toJson() => _$UserProfileToJson(this);
+
+  String heightFormatted() {
+    if(height == null) {
+      return "not set";
+    }
+    return "$height cm";
+  }
+
+  String weightFormatted() {
+    if(weight == null) {
+      return "not set";
+    }
+    return "$weight kg";
+  }
+
+  String bmiFormatted() {
+    final v = bmi();
+    if(v == null) return "not available";
+    String bmiSuffix = "Underweight";
+    if(v < 24.9) {
+      bmiSuffix = "Normal";
+    } else if(v < 29.9) {
+      bmiSuffix = "Overweight";
+    } else {
+      bmiSuffix = "Obese";
+    }
+    return "${v.toStringAsFixed(1)} ($bmiSuffix)";
+  }
 
   bool isDonor(String bloodTypeRecipient) {
     return isValidDonor(bloodTypeRecipient, this.bloodGroup);
@@ -91,11 +119,11 @@ String randomBloodType() {
   return BLOOD_TYPES[Random().nextInt(BLOOD_TYPES.length)];
 }
 
-List<User> generateRandomUsers(int n) {
+List<UserProfile> generateRandomUsers(int n) {
   final faker = Faker();
   final rand = Random();
-  return List<User>.generate(n, (index) {
-    return User(
+  return List<UserProfile>.generate(n, (index) {
+    return UserProfile(
       faker.guid.guid(),
       faker.person.firstName(),
       faker.person.lastName(),

@@ -1,12 +1,18 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:ubd/models/user.dart';
 import 'package:ubd/utils.dart';
+import 'package:ubd/views/auth/sign_up.dart';
 import 'package:ubd/views/quick_id.dart';
 
 class ProfileView extends StatefulWidget {
+
   @override
   _ProfileViewState createState() => _ProfileViewState();
 }
@@ -20,7 +26,19 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
       height: _imageSize*1.05,
       child: Row(
         children: [
-          Expanded(child: Container(),),
+          Expanded(child: InkWell(
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>SingUpPage()));
+            },
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Icon(Icons.logout),
+              ),
+            ),
+          )),
           Expanded(child: Column(
             children: [
               Stack(
@@ -178,7 +196,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
       ),
     );
   }
-  Widget _getProfileTab() {
+  Widget _getProfileTab(UserProfile user) {
     final theme = Theme.of(context);
     final titleStyle = theme.textTheme.headline4?.copyWith(fontSize: 18);
     final textStyle = theme.textTheme.subtitle2;
@@ -206,9 +224,9 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                     children: [
                       Text("Basic", style: titleStyle),
                       const SizedBox(height: 10,),
-                      Text("Emily Jones", style: textStyle),
+                      Text("${user.firstName} ${user.lastName}", style: textStyle),
                       const SizedBox(height: 3,),
-                      Text("01/04/1987", style: textStyle)
+                      Text(DateFormat.yMMMd().format(user.birthday), style: textStyle)
                     ],
                   ),
                 ),
@@ -248,11 +266,11 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                     children: [
                       Text("Personal", style: titleStyle),
                       const SizedBox(height: 10,),
-                      Text("Height - 176 cm", style: textStyle),
+                      Text("Height - ${user.heightFormatted()}", style: textStyle),
                       const SizedBox(height: 3,),
-                      Text("Weight - 79 kg", style: textStyle),
+                      Text("Weight - ${user.weightFormatted()}", style: textStyle),
                       const SizedBox(height: 3,),
-                      Text("BMI - 22 (Normal)", style: textStyle)
+                      Text("BMI - ${user.bmiFormatted()}", style: textStyle)
                     ],
                   ),
                 ),
@@ -276,7 +294,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
   Widget _getLeaderboardTab() {
     return SizedBox(height: 10, width: 20,);
   }
-  Widget _getTabs() {
+  Widget _getTabs(UserProfile user) {
     final theme = Theme.of(context);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -300,7 +318,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
             Container(
               padding: EdgeInsets.all(10),
               child: [
-                _getProfileTab(),
+                _getProfileTab(user),
                 _getLeaderboardTab()
               ][_tabController?.index ?? 0]
             )
@@ -314,19 +332,32 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
     return Container(
       decoration: BoxDecoration(color: Colors.white),
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 10,),
-            _getHeaderRow(),
-            const SizedBox(height: 20,),
-            _getInfoRow("AB+", 15),
-            const SizedBox(height: 20,),
-            _getXPRow(1200),
-            const SizedBox(height: 30,),
-            _getQuickIDRow("Emily Jones", 24),
-            const SizedBox(height: 30,),
-            _getTabs()
-          ],
+        child: StreamBuilder(
+          stream: getUserDocument()!.snapshots(),
+          builder: (context, snapshot) {
+            if(snapshot.hasData) {
+              final doc = snapshot.data as DocumentSnapshot;
+              final user = UserProfile.fromJson(doc.data()!);
+              return Column(
+                children: [
+                  const SizedBox(height: 10,),
+                  _getHeaderRow(),
+                  const SizedBox(height: 20,),
+                  _getInfoRow(user.bloodGroup, user.unitsDonated ?? 0),
+                  const SizedBox(height: 20,),
+                  _getXPRow(1200),
+                  const SizedBox(height: 30,),
+                  _getQuickIDRow("${user.firstName} ${user.lastName}", user.getAge()),
+                  const SizedBox(height: 30,),
+                  _getTabs(user)
+                ],
+              );
+            } else {
+              return Container(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
       ),
     );

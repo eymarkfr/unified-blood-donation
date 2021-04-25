@@ -9,7 +9,7 @@ class HistoryView extends StatefulWidget {
 }
 
 class _HistoryViewState extends State<HistoryView> {
-  final User user = generateRandomUsers(1)[0];
+  final UserProfile user = generateRandomUsers(1)[0];
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,23 @@ class _HistoryViewState extends State<HistoryView> {
           Center(child: Text("My History", style: Theme.of(context).textTheme.headline4)),
           const SizedBox(height: 20,),
           Expanded(
-            child: ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return HistoryItem(key: Key(item.date.toIso8601String()), item: item, dateFormat: DateFormat("MMMM d, y"),);
-              }
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(48, 20, 0, 20),
+                  child: Container(
+                    width: 3,
+                    decoration: BoxDecoration(color: Colors.black38),
+                  ),
+                ),
+                ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return HistoryItem(key: Key(item.date.toIso8601String()), item: item, dateFormat: DateFormat("MMMM d, y"),);
+                  }
+                ),
+              ],
             ),
           )
         ],

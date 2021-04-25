@@ -10,7 +10,7 @@ class HeroesView extends StatefulWidget {
 class _HeroesViewState extends State<HeroesView> {
 
   String teamName = "Florida Blood Donors";
-  List<User> _heroes = generateRandomUsers(6);
+  List<UserProfile> _heroes = generateRandomUsers(6);
 
   Widget _getHeader(int livesSaved, int unitsDonated) {
     final theme = Theme.of(context);

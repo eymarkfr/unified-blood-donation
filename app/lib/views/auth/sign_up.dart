@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:ubd/constants.dart';
+import 'package:ubd/main.dart';
 import 'package:ubd/models/user.dart';
 import 'package:ubd/widgets/auth/sign_up_initial.dart';
 
@@ -111,7 +112,7 @@ class _SingUpPageState extends State<SingUpPage> {
                         SnackBar(content: Text("Failed to set birthday. Please set from settings"))
                       );
                     }
-                    userDoc?.update({"birthday": _selectedDate});
+                    userDoc?.update({"birthday": _selectedDate!.toIso8601String()});
                     _onNext();
                   },
                   child: Center(
@@ -239,7 +240,7 @@ class _SingUpPageState extends State<SingUpPage> {
                     userDoc?.update({
                       "bloodGroup": _bloodType,
                     });
-                    _onNext();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage()));
                   },
                   child: Center(
                     child: Padding(

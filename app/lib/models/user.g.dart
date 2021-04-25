@@ -6,28 +6,29 @@ part of 'user.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User(
+UserProfile _$UserProfileFromJson(Map<String, dynamic> json) {
+  return UserProfile(
     json['userId'] as String,
-    json['firstName'] as String,
-    json['lastName'] as String,
+    json['firstName'] as String?,
+    json['lastName'] as String?,
     json['email'] as String,
-    json['phoneNumber'] as String,
-    json['height'] as int,
-    json['weight'] as int,
-    json['gender'] as String,
+    json['phoneNumber'] as String?,
+    json['height'] as int?,
+    json['weight'] as int?,
+    json['gender'] as String?,
     json['country'] as String,
     json['zipCode'] as String,
     DateTime.parse(json['birthday'] as String),
     json['bloodGroup'] as String,
-    json['xp'] as int,
+    json['xp'] as int?,
     json['unitsDonated'] as int?,
-    json['teamId'] as String,
-    json['imageUrl'] as String,
+    json['teamId'] as String?,
+    json['imageUrl'] as String?,
   );
 }
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
+    <String, dynamic>{
       'userId': instance.userId,
       'firstName': instance.firstName,
       'lastName': instance.lastName,
