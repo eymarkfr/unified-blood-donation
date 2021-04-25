@@ -1,9 +1,12 @@
 import 'dart:math';
 
 import 'package:faker/faker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ubd/constants.dart';
 import 'package:ubd/utils.dart';
 import 'package:ubd/utils/random_date.dart';
+
+import 'blood_bank.dart';
 
 const GENDERS = [
   "male",
@@ -31,8 +34,9 @@ class User {
   final int? unitsDonated;
   final String teamId;
   final String imageUrl;
+  final List<DonationHistoryItem> donationHistory;
 
-  User(this.userId, this.firstName, this.lastName, this.email, this.phoneNumber, this.height, this.weight, this.gender, this.country, this.zipCode, this.birthday, this.bloodGroup, this.xp, this.unitsDonated, this.teamId, this.imageUrl) {
+  User(this.userId, this.firstName, this.lastName, this.email, this.phoneNumber, this.height, this.weight, this.gender, this.country, this.zipCode, this.birthday, this.bloodGroup, this.xp, this.unitsDonated, this.teamId, this.imageUrl, [List<DonationHistoryItem>? history]) : this.donationHistory = history ?? [] {
     assert(isValidBloodType(this.bloodGroup));
     assert(GENDERS.contains(this.gender));
     assert(unitsDonated == null || unitsDonated! >= 0);
@@ -49,6 +53,22 @@ class User {
   int getAge() {
     return getAgeFromDates(birthday, null);
   }
+
+  List<DonationHistoryItem> getRandomHistroyForDemo(int n) {
+    final randDate = RandomDate();
+    List<BloodBank> banks = createDummyBloodBank(LatLng(0, 0), n);
+    List<DateTime> dates = List<DateTime>.generate(n, (index) => randDate.generateRandomDate(2019, 2021));
+    dates.sort();
+
+    return List<DonationHistoryItem>.generate(n, (index) => DonationHistoryItem(banks[index], dates[index]));
+  }
+}
+
+class DonationHistoryItem {
+  final BloodBank bloodBank;
+  final DateTime date;
+
+  DonationHistoryItem(this.bloodBank, this.date);
 }
 
 String randomBloodType() {

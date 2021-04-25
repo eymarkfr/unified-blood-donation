@@ -74,22 +74,33 @@ class _MyHomePageState extends State<MyHomePage> {
   int _bottomNavbarIndex = 0;
   List<BloodBank> _bloodBanks = [];
   LatLng? _location;
+  PageController? _pageController;
 
-  Widget _getView(int index) {
-    switch(index) {
-      case 1: return HistoryView();
-      case 2: return HeroesView();
-      case 3: return ProfileView();
-      case 0:
-      default:
-        return HomeView(showBloodBanks: (bloodBanks, location){
-          bloodBanks.sort((a,b)=>a.distance(location).compareTo(b.distance(location)));
-          setState(() {
-            _bloodBanks = bloodBanks;
-            _location = location;
-          });
-        },);
-    }
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController?.dispose();
+    super.dispose();
+  }
+
+  List<Widget> _getViews(){
+    return [
+      HomeView(showBloodBanks: (bloodBanks, location){
+        bloodBanks.sort((a,b)=>a.distance(location).compareTo(b.distance(location)));
+        setState(() {
+          _bloodBanks = bloodBanks;
+          _location = location;
+        });
+      },),
+      HistoryView(),
+      HeroesView(),
+      ProfileView()
+    ];
   }
 
   Widget? _getBottomSheet() {
@@ -121,12 +132,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: _getView(_bottomNavbarIndex),),
+      body: SafeArea(
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (index){
+              setState(() {
+                _bottomNavbarIndex = index;
+              });
+            },
+            children: _getViews(),
+          )
+     ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         currentIndex: _bottomNavbarIndex,
         type: BottomNavigationBarType.fixed,
         onTap: (newIndex){
+          _pageController?.jumpToPage(newIndex);
           setState(() {
             _bottomNavbarIndex = newIndex;
             _bloodBanks = [];

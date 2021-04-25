@@ -38,6 +38,7 @@ dependencies:
   location: ^4.1.1
   tuple: ^2.0.0
   faker: ^2.0.0-rc.2
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

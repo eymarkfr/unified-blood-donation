@@ -16,10 +16,11 @@ class BloodBank {
   final String id;
   final String name;
   final LatLng location;
+  final String? imageUrl;
 
   final List<Tuple2<String, BloodUrgency>> bloodNeeds;
 
-  BloodBank(this.id, this.name, this.location, this.bloodNeeds);
+  BloodBank(this.id, this.name, this.location, this.bloodNeeds, this.imageUrl);
 
   bool hasUrgent() {
     for(var entry in bloodNeeds) {
@@ -62,7 +63,7 @@ List<BloodBank> createDummyBloodBank(LatLng location, int n) {
       final location = LatLng(lat + random.nextDouble()*0.2 - 0.1, lng + random.nextDouble()*0.2 - 0.1);
       final needs = BLOOD_TYPES.map((e) => Tuple2(e, _randomUrgency(random)));
 
-      entries.add(BloodBank(faker.guid.guid(), name, location, needs.toList()));
+      entries.add(BloodBank(faker.guid.guid(), name, location, needs.toList(), faker.image.image(width: 400, height: 400, random: true)));
     }
 
     return entries;

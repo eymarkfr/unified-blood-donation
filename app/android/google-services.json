@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "973227458119",
+    "project_id": "unfied-blood-donation",
+    "storage_bucket": "unfied-blood-donation.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973227458119:android:cdbe865fd74db83fb4fb62",
+        "android_client_info": {
+          "package_name": "com.ubd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "973227458119-pe2ftroulog0ncao8klicqb5kvfs7cvl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBw5Tu6hw_1Aosj0M1D3GyDIp4XDzjjlpU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "973227458119-pe2ftroulog0ncao8klicqb5kvfs7cvl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
