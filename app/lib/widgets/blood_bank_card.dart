@@ -5,6 +5,8 @@ import 'package:ubd/models/blood_bank.dart';
 import 'package:ubd/views/bloodbank_details.dart';
 import 'package:ubd/widgets/blood_badge.dart';
 
+import 'appointment_booker.dart';
+
 class BloodBankListItem extends StatefulWidget {
   final BloodBank bloodBank;
   final LatLng? currentLocation;
@@ -55,7 +57,16 @@ class _BloodBankListItemState extends State<BloodBankListItem> {
         ),
         Expanded(
           child: InkWell(
-            onTap: (){/*TODO*/},
+            onTap: (){
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context){
+                    return AppointmentBooker(bloodBank: widget.bloodBank,);
+                  },
+                  isDismissible: true,
+                  backgroundColor: Colors.transparent
+              );
+            },
             child: Container(
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.only(topLeft: Radius.circular(10))),
