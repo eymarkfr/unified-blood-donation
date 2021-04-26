@@ -130,7 +130,7 @@ class DonationHistoryItem {
 }
 
 String randomBloodType() {
-  return BLOOD_TYPES[Random().nextInt(BLOOD_TYPES.length)];
+  return BLOOD_TYPES[Random().nextInt(BLOOD_TYPES.length-1)+1];
 }
 
 List<UserProfile> generateRandomUsers(int n) {
