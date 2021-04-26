@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ubd/models/blood_bank.dart';
+import 'package:ubd/views/bloodbank_details.dart';
 import 'package:ubd/widgets/blood_badge.dart';
 
 class BloodBankListItem extends StatefulWidget {
@@ -101,24 +102,34 @@ class _BloodBankListItemState extends State<BloodBankListItem> {
       ],
     );
   }
+
+  void _showDetailsView() {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) => BloodBankDetails(bloodBank: widget.bloodBank),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: widget.bloodBank.hasUrgent() ? EdgeInsets.only(top: 10) : EdgeInsets.all(0),
       child: Stack(
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 15),
-            child: Card(
-              elevation: 4,
-              child: Container(
-                padding: const EdgeInsets.only(top: 30),
-                child: Column(
-                  children: [
-                    _getHeader(),
-                    _getCenterContent(),
-                    _getBottomRow(),
-                  ],
+          InkWell(
+            onTap: _showDetailsView,
+            child: Container(
+              margin: EdgeInsets.only(top: 15),
+              child: Card(
+                elevation: 4,
+                child: Container(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Column(
+                    children: [
+                      _getHeader(),
+                      _getCenterContent(),
+                      _getBottomRow(),
+                    ],
+                  ),
                 ),
               ),
             ),

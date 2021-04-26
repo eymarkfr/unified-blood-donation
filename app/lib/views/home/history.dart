@@ -28,7 +28,7 @@ class _HistoryViewState extends State<HistoryView> {
                   padding: const EdgeInsets.fromLTRB(48, 20, 0, 20),
                   child: Container(
                     width: 3,
-                    decoration: BoxDecoration(color: Colors.black38),
+                    decoration: BoxDecoration(color: Colors.black12),
                   ),
                 ),
                 ListView.builder(

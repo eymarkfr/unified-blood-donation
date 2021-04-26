@@ -98,3 +98,11 @@ Image getLevelIcon(int level, double? height, double? width) {
   return Image.asset("assets/icons/icon_level3.png", fit: BoxFit.fill, height: height, width: width,);
 }
 
+TimeOfDay addMinutesToTimeOfDay(TimeOfDay t, int minutes) {
+  int minTot = t.minute + minutes;
+  int newMinutes = minTot % 60;
+  int hourDiff = minTot ~/ 60;
+  int newHour = (t.hour + hourDiff) % 24;
+  return TimeOfDay(hour: newHour, minute: newMinutes);
+}
+

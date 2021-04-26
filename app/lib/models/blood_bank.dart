@@ -2,25 +2,74 @@ import 'dart:math';
 
 import 'package:faker/faker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:tuple/tuple.dart';
 import 'package:ubd/constants.dart';
+import 'package:ubd/models/custom_latlng_converter.dart';
+import 'package:ubd/models/custom_tuple_converter.dart';
 import 'package:ubd/utils.dart';
+part 'blood_bank.g.dart';
 
 enum BloodUrgency {
-  NOT_NEEDED,
-  NEEDED,
-  URGENT
+  @JsonValue("not_needed") NOT_NEEDED,
+  @JsonValue("needed") NEEDED,
+  @JsonValue("urgent") URGENT
 }
 
+String _urgencyToJSON(BloodUrgency u) {
+  switch(u) {
+    case BloodUrgency.NOT_NEEDED:
+      return "not_needed";
+    case BloodUrgency.NEEDED:
+      return "needed";
+    case BloodUrgency.URGENT:
+      return "urgent";
+  }
+}
+
+BloodUrgency _urgencyFromString(String s) {
+  switch(s) {
+    case "not_needed": return BloodUrgency.NOT_NEEDED;
+    case "needed": return BloodUrgency.NEEDED;
+    case "urgent": return BloodUrgency.URGENT;
+    default: return BloodUrgency.NOT_NEEDED;
+  }
+}
+
+class UrgencyEntry extends Tuple2<String, BloodUrgency> {
+  UrgencyEntry(String item1, BloodUrgency item2) : super(item1, item2);
+}
+class EntryConverter implements JsonConverter<UrgencyEntry, List> {
+  const EntryConverter();
+
+  @override
+  UrgencyEntry fromJson(List<dynamic> json) {
+    return UrgencyEntry(json[0], _urgencyFromString(json[1]));
+  }
+
+  @override
+  List toJson(UrgencyEntry object) {
+    return [object.item1, _urgencyToJSON(object.item2)];
+  }
+
+}
+
+@JsonSerializable()
+@LatLngConverter()
+@EntryConverter()
 class BloodBank {
   final String id;
   final String name;
   final LatLng location;
   final String? imageUrl;
 
-  final List<Tuple2<String, BloodUrgency>> bloodNeeds;
+  final List<UrgencyEntry> bloodNeeds;
 
   BloodBank(this.id, this.name, this.location, this.bloodNeeds, this.imageUrl);
+
+  factory BloodBank.fromJson(Map<String, dynamic> json) => _$BloodBankFromJson(json);
+  Map<String, dynamic> toJson() => _$BloodBankToJson(this);
+
 
   bool hasUrgent() {
     for(var entry in bloodNeeds) {
@@ -61,7 +110,7 @@ List<BloodBank> createDummyBloodBank(LatLng location, int n) {
     for(var i = 0; i < n; ++i) {
       final name = faker.company.name();
       final location = LatLng(lat + random.nextDouble()*0.2 - 0.1, lng + random.nextDouble()*0.2 - 0.1);
-      final needs = BLOOD_TYPES.map((e) => Tuple2(e, _randomUrgency(random)));
+      final needs = BLOOD_TYPES.sublist(1).map((e) => UrgencyEntry(e, _randomUrgency(random)));
 
       entries.add(BloodBank(faker.guid.guid(), name, location, needs.toList(), faker.image.image(width: 400, height: 400, random: true)));
     }
