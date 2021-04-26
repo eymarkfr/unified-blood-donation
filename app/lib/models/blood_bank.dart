@@ -61,11 +61,19 @@ class BloodBank {
   final String name;
   final LatLng location;
   final String? imageUrl;
-  final String? url = "https://www.icrc.com";
+  final String? url;
+  final String city;
+  final String zipCode;
+  final String street;
+  final String country;
 
   final List<UrgencyEntry> bloodNeeds;
 
-  BloodBank(this.id, this.name, this.location, this.bloodNeeds, this.imageUrl);
+  BloodBank(this.id, this.name, this.location, this.bloodNeeds, this.imageUrl, this.city, this.zipCode, this.street, this.country, this.url);
+
+  String formatAddress() {
+    return "$street, $zipCode $city, $country";
+  }
 
   factory BloodBank.fromJson(Map<String, dynamic> json) => _$BloodBankFromJson(json);
   Map<String, dynamic> toJson() => _$BloodBankToJson(this);
@@ -112,7 +120,7 @@ List<BloodBank> createDummyBloodBank(LatLng location, int n) {
       final location = LatLng(lat + random.nextDouble()*0.2 - 0.1, lng + random.nextDouble()*0.2 - 0.1);
       final needs = BLOOD_TYPES.sublist(1).map((e) => UrgencyEntry(e, _randomUrgency(random)));
 
-      entries.add(BloodBank(faker.guid.guid(), name, location, needs.toList(), faker.image.image(width: 400, height: 400, random: true)));
+      entries.add(BloodBank(faker.guid.guid(), name, location, needs.toList(), faker.image.image(width: 400, height: 400, random: true), faker.address.city(), faker.address.zipCode(), faker.address.streetAddress(), "USA", "https://www.icrc.org"));
     }
 
     return entries;

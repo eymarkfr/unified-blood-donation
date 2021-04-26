@@ -48,6 +48,7 @@ dependencies:
   image: ^3.0.2
   firebase_storage: ^8.0.4
   table_calendar: ^3.0.0
+  flutter_web_browser: ^0.14.0
 
 dev_dependencies:
   flutter_test:

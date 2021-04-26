@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ubd/models/user.dart';
+import 'package:ubd/views/bloodbank_details.dart';
 
 class HistoryItem extends StatelessWidget {
   final DonationHistoryItem item;
@@ -12,7 +13,11 @@ class HistoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return InkWell(
-      onTap: (){/*TODO*/},
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) => BloodBankDetails(bloodBank: item.bloodBank),
+        ));
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
         child: Row(

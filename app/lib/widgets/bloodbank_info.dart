@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:ubd/models/blood_bank.dart';
 import 'package:ubd/widgets/opening_hours.dart';
-
 class BloodBankInfo extends StatefulWidget {
   final BloodBank bloodBank;
 
@@ -26,7 +26,7 @@ class _BloodBankInfoState extends State<BloodBankInfo> {
       children: [
         Icon(Icons.location_on_outlined, color: Theme.of(context).primaryColor,),
         SizedBox(width: _spacer,),
-        Expanded(child: Text("Paul-Feyerabend-Hof 1, 8049 Zurich, Switzerland", maxLines: 100,))
+        Expanded(child: Text(widget.bloodBank.formatAddress(), maxLines: 100,))
       ],
     );
   }
@@ -69,13 +69,19 @@ class _BloodBankInfoState extends State<BloodBankInfo> {
   }
 
   Widget _homepageRow() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.public_outlined, color: Theme.of(context).primaryColor,),
-        SizedBox(width: _spacer,),
-        Expanded(child: Text("www.icrc.org", maxLines: 100,))
-      ],
+    return InkWell(
+      onTap: () {
+        if(widget.bloodBank.url == null) return;
+        FlutterWebBrowser.openWebPage(url: widget.bloodBank.url!);
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.public_outlined, color: Theme.of(context).primaryColor,),
+          SizedBox(width: _spacer,),
+          Expanded(child: Text(widget.bloodBank.url ?? "", maxLines: 100,))
+        ],
+      ),
     );
   }
 
