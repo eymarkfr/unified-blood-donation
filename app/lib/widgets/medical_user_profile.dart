@@ -78,6 +78,9 @@ class _MedicalUserProfileState extends State<MedicalUserProfile> {
                         onSelectedItemChanged: (int item) {
                           _bloodGroup = BLOOD_TYPES[item];
                         },
+                        scrollController: FixedExtentScrollController(
+                            initialItem: BLOOD_TYPES.indexWhere((bloodgroup) =>
+                                widget.user.bloodGroup == bloodgroup)),
                         childCount: BLOOD_TYPES.length,
                         itemBuilder: (context, index) {
                           return Center(child: Text(BLOOD_TYPES[index]));
