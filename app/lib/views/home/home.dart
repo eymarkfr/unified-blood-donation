@@ -112,6 +112,7 @@ class _HomeViewState extends State<HomeView> {
           builder: (context) =>
           _getBottomSheet(_nearbyBloodBanks, locData.toLatLng()) ?? Container()
       );
+      _bottomSheetController?.closed.then((value) => widget.setSheetController(null));
       widget.setSheetController(_bottomSheetController);
     }
   }
