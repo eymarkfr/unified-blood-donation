@@ -184,7 +184,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
               children: [
                 Row(
                   children: [
-                    CircleAvatar(child: Text(user.initials()), backgroundImage: imageUrl == null ? null : NetworkImage(imageUrl), radius: 0.25*containerHeight,),
+                    CircleAvatar(child: Text(user.initials()), foregroundImage: imageUrl == null ? null : NetworkImage(imageUrl), radius: 0.25*containerHeight,),
                     SizedBox(width: 15,),
                     Text("$name, $age", style: theme.textTheme.headline4,)
                   ],
@@ -234,17 +234,12 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             elevation: 5,
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Image.asset("assets/icons/basic_item.png"),
-                  ],
-                ),
+                Expanded(flex: 1, child: Image.asset("assets/icons/basic_item.png", fit: BoxFit.contain,)),
                 SizedBox(width: 15,),
                 Expanded(
+                  flex: 2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -277,16 +272,10 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
             elevation: 5,
             child: Row(
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Image.asset("assets/icons/personal_item.png"),
-                  ],
-                ),
+                Expanded(flex:1, child: Image.asset("assets/icons/personal_item.png")),
                 SizedBox(width: 15,),
                 Expanded(
+                  flex: 2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
