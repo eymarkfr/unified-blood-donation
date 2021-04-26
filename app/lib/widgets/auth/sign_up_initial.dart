@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ubd/main.dart';
 
 import '../custom_text_from_field.dart';
 
@@ -63,6 +64,8 @@ class _SignUpBasicFormState extends State<SignUpBasicForm> {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       log("Login successful");
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyHomePage()));
+
     } on FirebaseAuthException catch (e) {
       log(e.code);
 

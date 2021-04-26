@@ -61,6 +61,7 @@ class BloodBank {
   final String name;
   final LatLng location;
   final String? imageUrl;
+  final String? url = "https://www.icrc.com";
 
   final List<UrgencyEntry> bloodNeeds;
 

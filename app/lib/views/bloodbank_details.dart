@@ -45,7 +45,7 @@ class _BloodBankDetailsState extends State<BloodBankDetails> {
                     child: ClipOval(
                       child: SafeUrlImage(
                         placeholderAsset: "assets/images/bb_placeholder.jpg",
-                        imageUrl: null,
+                        imageUrl: widget.bloodBank.imageUrl,
                         fit: BoxFit.cover,
                       ),
                     )),

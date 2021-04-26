@@ -10,8 +10,9 @@ import 'appointment_booker.dart';
 class BloodBankListItem extends StatefulWidget {
   final BloodBank bloodBank;
   final LatLng? currentLocation;
+  final void Function(BloodBank)? moveTo;
 
-  const BloodBankListItem({Key? key, required this.bloodBank, required this.currentLocation}) : super(key: key);
+  const BloodBankListItem({Key? key, required this.bloodBank, required this.currentLocation, this.moveTo}) : super(key: key);
 
   @override
   _BloodBankListItemState createState() => _BloodBankListItemState();
@@ -43,6 +44,9 @@ class _BloodBankListItemState extends State<BloodBankListItem> {
       children: [
         Expanded(
           child: InkWell(
+            onTap: (){
+              widget.moveTo?.call(widget.bloodBank);
+            },
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

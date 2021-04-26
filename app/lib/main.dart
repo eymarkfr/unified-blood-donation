@@ -108,8 +108,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _bottomNavbarIndex = 0;
-  List<BloodBank> _bloodBanks = [];
-  LatLng? _location;
+  PersistentBottomSheetController? _sheetController;
   PageController? _pageController;
   User? _user;
 
@@ -128,43 +127,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> _getViews(){
     return [
-      HomeView(showBloodBanks: (bloodBanks, location){
-        bloodBanks.sort((a,b)=>a.distance(location).compareTo(b.distance(location)));
-        setState(() {
-          _bloodBanks = bloodBanks;
-          _location = location;
-        });
+      HomeView(setSheetController: (controller){
+        _sheetController = controller;
       },),
       HistoryView(),
       HeroesView(),
       ProfileView()
     ];
-  }
-
-  Widget? _getBottomSheet() {
-    if(_bloodBanks.isNotEmpty) {
-      return DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.25,
-        minChildSize: 0.1,
-        builder: (context, scrollController) {
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            margin: EdgeInsets.symmetric(horizontal: 5),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-            child: ListView.builder(
-              itemCount: _bloodBanks.length,
-              controller: scrollController,
-              itemBuilder: (context, index) {
-                return BloodBankListItem(bloodBank: _bloodBanks[index], currentLocation: _location,);
-              }
-            )
-          );
-        }
-      );
-    }
-
-    return null; //Container(height: 0,);
   }
 
   @override
@@ -175,25 +144,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       body: SafeArea(
-          child: PageView(
-            controller: _pageController,
-            onPageChanged: (index){
-              setState(() {
-                _bottomNavbarIndex = index;
-              });
-            },
-            children: _getViews(),
-          )
+          child: _getViews()[_bottomNavbarIndex]
      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         currentIndex: _bottomNavbarIndex,
         type: BottomNavigationBarType.fixed,
         onTap: (newIndex){
-          _pageController?.jumpToPage(newIndex);
+          _sheetController?.close();
+          _sheetController = null;
           setState(() {
             _bottomNavbarIndex = newIndex;
-            _bloodBanks = [];
           });
         },
         items: [
@@ -202,8 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.group_rounded), label: 'Heroes'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
         ],
-      ),
-      bottomSheet: _getBottomSheet(),
+      )
     );
   }
 }

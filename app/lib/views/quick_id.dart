@@ -39,7 +39,7 @@ class _QuickIdViewState extends State<QuickIdView> {
                           children: [
                             Text("${user.firstName} ${user.lastName}, ${user.getAge()}", style: theme.textTheme.headline4?.copyWith(color: Colors.white),),
                             SizedBox(height: 5,),
-                            Text("#ID${user.userId}", style: theme.textTheme.subtitle2?.copyWith(color: Colors.white),),
+                            Text("#ID${user.userId.substring(14)}", style: theme.textTheme.subtitle2?.copyWith(color: Colors.white),),
                             SizedBox(height: 25,)
                           ],
                         )
