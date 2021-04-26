@@ -100,6 +100,9 @@ class _BloodBankListItemState extends State<BloodBankListItem> {
         badges.add(BloodBadge(bloodType: element.item1, isUrgent: false));
       }
     });
+    if(badges.isEmpty) {
+      return SizedBox(height: 40,);
+    }
     return Row(
       children: [
         Expanded(
