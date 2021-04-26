@@ -49,6 +49,11 @@ class UserProfile {
   factory UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
   Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 
+  String initials() {
+    if(lastName == null || firstName == null) return "";
+    return "${firstName![0]}${lastName![0]}";
+  }
+
   String heightFormatted() {
     if(height == null) {
       return "not set";
@@ -83,7 +88,7 @@ class UserProfile {
 
   double? bmi() {
     if(weight == null || height == null) return null;
-    return weight! / (height!*height!);
+    return weight! / (height!*height!) * 1e4;
   }
 
   int getAge() {

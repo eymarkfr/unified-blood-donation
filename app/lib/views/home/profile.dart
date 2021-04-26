@@ -26,6 +26,7 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStateMixin {
   final _imageSize = 120.0;
   final _imagePicker = ImagePicker();
+  List<dynamic> _appointments = [];
   TabController? _tabController;
 
   void _handleProfileImageEdit() async {
@@ -68,9 +69,10 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
             children: [
               Stack(
                 children: [
-                  ClipRRect(
-                    child: SafeUrlImage(imageUrl: userProfile.imageUrl, placeholderAsset:"assets/images/emily.png", width: _imageSize, height: _imageSize, fit: BoxFit.fill,),
-                    borderRadius: BorderRadius.circular(1000),
+                  CircleAvatar(
+                    child: Text(userProfile.initials(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                    foregroundImage: userProfile.imageUrl == null ? null : NetworkImage(userProfile.imageUrl!),
+                    radius: _imageSize*0.5,
                   ),
                   Container(
                     height: _imageSize,
@@ -167,8 +169,11 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
       ),
     );
   }
-  Widget _getQuickIDRow(String name, int age, String? imageUrl) {
+  Widget _getQuickIDRow(UserProfile user) {
     final theme = Theme.of(context);
+    final imageUrl = user.imageUrl;
+    final age = user.getAge();
+    final name = "${user.firstName} ${user.lastName}";
     const containerHeight = 90.0;
     const buttonHeight = 40.0;
     return Container(
@@ -183,7 +188,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
               children: [
                 Row(
                   children: [
-                    CircleAvatar(backgroundImage: getSafeImageProvider("assets/images/emily.png", imageUrl), radius: 0.25*containerHeight,),
+                    CircleAvatar(child: Text(user.initials()), backgroundImage: imageUrl == null ? null : NetworkImage(imageUrl), radius: 0.25*containerHeight,),
                     SizedBox(width: 15,),
                     Text("$name, $age", style: theme.textTheme.headline4,)
                   ],
@@ -317,8 +322,49 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
     );
   }
   Widget _getLeaderboardTab() {
-    return SizedBox(height: 10, width: 20,);
+    final builder = (Map<String, dynamic> appointment){
+      final date = DateTime.parse(appointment['date'] as String);
+      final bb = appointment['bloodBank'] as Map<String, dynamic>;
+        return Container(
+          child: Card(
+            elevation: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(bb['imageUrl'] ?? ""),
+                    radius: 40,
+                  ),
+                  const SizedBox(width: 10,),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(DateFormat("E, d. MMMM y - hh:mm").format(date), style: Theme.of(context).textTheme.headline5,),
+                        const SizedBox(height: 5,),
+                        Text(bb['name'])
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+    };
+
+    _appointments.sort((a, b){
+      final dateA = a['date'] as String;
+      final dateB = b['date'] as String;
+
+      return dateA.compareTo(dateB);
+    });
+    return Column(
+      children: _appointments.map((e)=>builder(e as Map<String, dynamic>)).toList(),
+    );
   }
+
   Widget _getTabs(UserProfile user) {
     final theme = Theme.of(context);
     return Container(
@@ -333,7 +379,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                 controller: _tabController,
                 tabs: [
                   Tab(text: "Profile"),
-                  Tab(text: "Leaderboard",)
+                  Tab(text: "Appointments",)
                 ],
                 indicatorColor: theme.primaryColor,
                 labelColor: Colors.black,
@@ -372,7 +418,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                   const SizedBox(height: 20,),
                   _getXPRow(1200),
                   const SizedBox(height: 30,),
-                  _getQuickIDRow("${user.firstName} ${user.lastName}", user.getAge(), user.imageUrl),
+                  _getQuickIDRow(user),
                   const SizedBox(height: 30,),
                   _getTabs(user)
                 ],
@@ -398,6 +444,13 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
     _tabController?.addListener(_handleTabSelection);
+    final docRef = getUserDocument();
+    docRef?.get()
+      .then((value) {
+        setState(() {
+          _appointments = value.data()!['appointments'] ?? [];
+        });
+    });
     super.initState();
   }
 

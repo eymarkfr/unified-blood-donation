@@ -28,7 +28,12 @@ class _QuickIdViewState extends State<QuickIdView> {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                            child: CircleAvatar(backgroundImage: getSafeImageProvider("assets/images/emily.png", user.imageUrl), radius:70,),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: Text(user.initials(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                              foregroundImage: user.imageUrl == null ? null : NetworkImage(user.imageUrl!),
+                              radius: 70,
+                            ),
                           ),
                         ),
                         Column(
