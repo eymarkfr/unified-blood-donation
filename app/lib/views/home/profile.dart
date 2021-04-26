@@ -12,6 +12,7 @@ import 'package:ubd/utils.dart';
 import 'package:ubd/views/auth/sign_up.dart';
 import 'package:ubd/views/quick_id.dart';
 import 'package:image/image.dart' as ImageLibrary;
+import 'package:ubd/widgets/basic_user_profile.dart';
 
 class ProfileView extends StatefulWidget {
 
@@ -222,6 +223,20 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
       ),
     );
   }
+
+void openBasicUserProfile(BuildContext context, UserProfile user) {
+  showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return BasicUserProfile(
+          user: user,
+        );
+      },
+      isDismissible: true,
+      backgroundColor: Colors.transparent
+  );
+}
+
   Widget _getProfileTab(UserProfile user) {
     final theme = Theme.of(context);
     final titleStyle = theme.textTheme.headline4?.copyWith(fontSize: 18);
@@ -229,7 +244,9 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
     return Column(
       children: [
         InkWell(
-          onTap: (){/*TODO*/},
+          onTap: (){
+            openBasicUserProfile(context, user);
+          },
           child: Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             elevation: 5,
