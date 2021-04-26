@@ -9,7 +9,6 @@ import 'package:ubd/views/home/heroes.dart';
 import 'package:ubd/views/home/history.dart';
 import 'package:ubd/views/home/home.dart';
 import 'package:ubd/views/home/profile.dart';
-import 'package:ubd/views/quick_id.dart';
 import 'package:ubd/views/auth/sign_up.dart';
 import 'package:ubd/widgets/blood_bank_card.dart';
 

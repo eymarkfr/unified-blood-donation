@@ -32,8 +32,6 @@ class _BloodBankInfoState extends State<BloodBankInfo> {
   }
 
   Widget _openingHours(Map<String, OpeningHourDayEntry?> hours) {
-    final dayOfWeek = DateTime.now().weekday;
-    final dayName = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][dayOfWeek];
     final open = isOpen(hours);
 
     String title = "";

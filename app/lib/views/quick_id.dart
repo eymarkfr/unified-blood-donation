@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ubd/models/user.dart';
-import 'package:ubd/widgets/safe_image.dart';
 
 class QuickIdView extends StatefulWidget {
   @override

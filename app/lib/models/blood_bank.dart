@@ -6,7 +6,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:tuple/tuple.dart';
 import 'package:ubd/constants.dart';
 import 'package:ubd/models/custom_latlng_converter.dart';
-import 'package:ubd/models/custom_tuple_converter.dart';
 import 'package:ubd/utils.dart';
 part 'blood_bank.g.dart';
 

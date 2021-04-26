@@ -1,19 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:tuple/tuple.dart';
 import 'package:ubd/models/blood_bank.dart';
-import 'package:ubd/models/user.dart';
-import 'package:ubd/utils.dart';
 import 'package:ubd/widgets/appointment_booker.dart';
 import 'package:ubd/widgets/bloodbank_info.dart';
-import 'package:ubd/widgets/opening_hours.dart';
 import 'package:ubd/widgets/safe_image.dart';
 
 class BloodBankDetails extends StatefulWidget {
@@ -39,7 +30,6 @@ class _BloodBankDetailsState extends State<BloodBankDetails> {
   }
 
   Widget _getHeaderRow() {
-    final textTheme = Theme.of(context).textTheme;
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -6,8 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:ubd/models/user.dart';
@@ -15,7 +12,6 @@ import 'package:ubd/utils.dart';
 import 'package:ubd/views/auth/sign_up.dart';
 import 'package:ubd/views/quick_id.dart';
 import 'package:image/image.dart' as ImageLibrary;
-import 'package:ubd/widgets/safe_image.dart';
 
 class ProfileView extends StatefulWidget {
 
