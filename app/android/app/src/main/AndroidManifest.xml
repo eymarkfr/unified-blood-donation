@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ubd">
    <application
-        android:label="ubd"
-        android:icon="@mipmap/ic_launcher"
+        android:label="Unified Blood Donation"
+        android:icon="@mipmap/launcher_icon"
        android:requestLegacyExternalStorage="true">
 
        <meta-data
