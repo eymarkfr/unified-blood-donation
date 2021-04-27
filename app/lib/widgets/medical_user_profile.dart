@@ -19,15 +19,24 @@ class _MedicalUserProfileState extends State<MedicalUserProfile> {
   String? _bloodGroup;
 
   @override
+  void initState() {
+    _height = widget.user.height;
+    _weight = widget.user.weight;
+    _bloodGroup = widget.user.bloodGroup;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       child: Form(
           key: _formKey,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 TextFormField(
                   keyboardType: TextInputType.number,
@@ -41,7 +50,7 @@ class _MedicalUserProfileState extends State<MedicalUserProfile> {
                   decoration:
                       InputDecoration(hintText: 'Height', labelText: 'Height'),
                   onChanged: (value) {
-                    _height = int.tryParse(value) ?? -1;
+                    _height = int.tryParse(value);
                   },
                 ),
                 TextFormField(
@@ -56,7 +65,7 @@ class _MedicalUserProfileState extends State<MedicalUserProfile> {
                     decoration: InputDecoration(
                         hintText: 'Weight', labelText: 'Weight'),
                     onChanged: (value) {
-                      _weight = int.tryParse(value) ?? -1;
+                      _weight = int.tryParse(value);
                     }),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -90,7 +99,8 @@ class _MedicalUserProfileState extends State<MedicalUserProfile> {
                 Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
-                      onPressed: () {
+                      style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(1000))),
+                      onPressed: () async {
                         final userDoc = getUserDocument();
                         if (userDoc == null) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -98,33 +108,38 @@ class _MedicalUserProfileState extends State<MedicalUserProfile> {
                                   "Failed to save changes. Please retry later!")));
                         }
 
-                        int height = -1;
-                        if (_height == -1 || _height == null) {
-                          height = widget.user.height ?? -1;
-                        } else {
-                          height = _height!;
+                        Map<String, dynamic> updateDoc = {};
+                        if(_height != null && _height != widget.user.height) {
+                          updateDoc["height"] = _height;
+                        }
+                        if(_weight != null && _weight != widget.user.weight) {
+                          updateDoc['weight'] = _weight;
+                        }
+                        if(_bloodGroup != null && _bloodGroup != widget.user.bloodGroup) {
+                          updateDoc['bloodGroup'] = _bloodGroup;
                         }
 
-                        int weight = -1;
-                        if (_weight == -1 || _weight == null) {
-                          weight = widget.user.weight ?? -1;
-                        } else {
-                          weight = _weight!;
+                        if(updateDoc.isEmpty) {
+                          Navigator.of(context).pop();
+                          return;
                         }
 
-                        String bloodGroup = widget.user.bloodGroup;
-                        if (_bloodGroup == null) {
-                          bloodGroup = widget.user.bloodGroup;
-                        } else {
-                          bloodGroup = _bloodGroup!;
+                        try {
+                          await userDoc?.update(updateDoc);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Information updated"))
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Failed to update information"))
+                          );
                         }
-                        userDoc?.update({
-                          "height": height,
-                          "weight": weight,
-                          "bloodGroup": bloodGroup
-                        });
+                        Navigator.of(context).pop();
                       },
-                      child: Text('Save'),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Text('Save', style: TextStyle(fontSize: 20),),
+                      ),
                     ))
               ],
             ),

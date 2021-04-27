@@ -20,13 +20,14 @@ class _BasicUserProfileState extends State<BasicUserProfile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
       child: Form(
           key: _formKey,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 TextFormField(
                   initialValue: widget.user.firstName,
@@ -76,24 +77,40 @@ class _BasicUserProfileState extends State<BasicUserProfile> {
                 Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
-                      onPressed: () {
+                      style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(1000))),
+                      onPressed: () async {
                         final userDoc = getUserDocument();
                         if (userDoc == null) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(
                                   "Failed to save changes. Please retry later!")));
                         }
-                        String? birthDay = _birthDay?.toIso8601String();
-                        if (birthDay == null) {
-                          birthDay = widget.user.birthday.toIso8601String();
+                        Map<String, dynamic> updateDoc = {};
+                        if(_firstName != null && _firstName != widget.user.firstName) updateDoc['firstName'] = _firstName;
+                        if(_lastName != null && _lastName != widget.user.lastName) updateDoc['lastName'] = _lastName;
+                        if(_birthDay != null && _birthDay != widget.user.birthday) updateDoc['birthday'] = _birthDay!.toIso8601String();
+
+                        if(updateDoc.isEmpty) {
+                          Navigator.of(context).pop();
+                          return;
                         }
-                        userDoc?.update({
-                          "firstName": _firstName ?? widget.user.firstName,
-                          "lastName": _lastName ?? widget.user.lastName,
-                          "birthday": birthDay
-                        });
+
+                        try {
+                          await userDoc?.update(updateDoc);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Information updated"))
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Failed to update information"))
+                          );
+                        }
+                        Navigator.of(context).pop();
                       },
-                      child: Text('Save'),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Text('Save', style: TextStyle(fontSize: 20),),
+                      ),
                     ))
               ],
             ),

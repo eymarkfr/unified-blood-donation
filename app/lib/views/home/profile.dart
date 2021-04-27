@@ -241,6 +241,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
   void openMedicalUserProfile(UserProfile user) {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (context) {
           return MedicalUserProfile(
             user: user,
